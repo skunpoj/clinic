@@ -183,37 +183,48 @@ def slide_01_title(prs, num, total):
 
 
 def slide_02_problem(prs, num, total):
-    """Slide 2 — Problem & Motivation."""
+    """Slide 2 — Problem Statement (verbatim from exam)."""
     sl = blank_slide(prs)
     add_rect(sl, 0, 0, 13.33, 7.5, LIGHT)
-    header_bar(sl, "Problem & Motivation", "Why semantic retrieval matters in clinical settings")
+    header_bar(sl, "Problem Statement", "Problem 1 — Clinical Note Retrieval System")
 
-    # Left card — The Clinical Challenge  — height capped at y=6.9
-    card(sl, 0.3, 1.3, 6.1, 5.6, "The Clinical Challenge",
-         ["Doctors spend ~30% of time searching past cases",
+    # Left card — verbatim Problem Statement bullets
+    card(sl, 0.3, 1.3, 6.1, 3.5, "Problem Statement",
+         ["The platform needs to help doctors quickly find",
+          "relevant past cases from a large corpus of",
+          "clinical notes.",
           "",
-          "Keyword search fails with clinical synonym variation",
-          "  \"CKD\" ≠ \"renal failure\" to a search engine",
+          "A doctor types a natural language query describing",
+          "a patient situation, and the system should surface",
+          "the most relevant clinical notes from the database.",
           "",
-          "Large corpus (5 000+ notes) makes manual",
-          "  review impossible within a consultation",
-          "",
-          "Critical information buried in unstructured text:",
-          "  transcriptions, discharge notes, consult letters"])
+          "The system must understand clinical meaning, not",
+          "just match keywords — a query about 'a diabetic",
+          "patient with kidney complications' should retrieve",
+          "notes about CKD with diabetes even if the exact",
+          "words differ."])
 
-    # Right card — Our Goal
-    card(sl, 6.7, 1.3, 6.3, 5.6, "Our Goal",
-         ["Semantic retrieval: meaning over keywords",
-          "",
-          "Surface relevant notes even with different",
-          "  vocabulary or abbreviation style",
-          "",
-          "LLM summary so doctors get an answer,",
-          "  not just a ranked list of documents",
-          "",
-          "REST API exposing the system as a service",
-          "  so any EHR or front-end can consume it"])
+    # Right card — verbatim Instructions
+    card(sl, 6.7, 1.3, 6.3, 3.5, "Instructions",
+         ["Build a retrieval system:",
+          "  natural language query → ranked clinical notes",
+          "Use an embedding model — justify your selection",
+          "Add an LLM layer for a concise summary",
+          "Evaluate: clinically relevant, not keyword matches",
+          "(Optional) Fine-tune the embedding model",
+          "Prepare a presentation — max 10 pages",
+          "Expose as a REST API service",
+          "Prepare to present — 30-minute session"])
 
+    # Bottom: target audience + guidance
+    add_rect(sl, 0.3, 5.05, 12.7, 1.85, NAVY)
+    txb = add_textbox(sl, 0.5, 5.13, 12.3, 1.65)
+    txf = clear_first_para(txb)
+    para(txf, "Target Audience  ·  Additional Guidance", 13, bold=True, colour=TEAL)
+    para(txf, "AI Engineering Manager  ·  Product Manager", 12, colour=_rgb(0xCC, 0xDD, 0xFF), space_before=4)
+    para(txf,
+         "Anything outside this instruction, please feel free to make your own assumption as needed.",
+         12, colour=WHITE, space_before=4)
     add_slide_number(sl, num, total)
 
 

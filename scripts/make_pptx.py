@@ -180,35 +180,38 @@ def slide_title(prs, num, total):
 def slide_problem(prs, num, total):
     sl = blank_slide(prs)
     add_rect(sl, 0, 0, 13.33, 7.5, LIGHT)
-    header_bar(sl, "Problem Statement", "What are we solving?")
+    header_bar(sl, "Problem Statement", "Problem 1 — Clinical Note Retrieval System")
 
-    # Left panel — problem description
-    card(sl, 0.3, 1.3, 5.8, 2.8, "Clinical Challenge",
-         ["Doctors need to quickly find relevant past cases",
-          "from a large corpus of clinical notes.",
+    # Left panel — verbatim Problem Statement bullets
+    card(sl, 0.3, 1.3, 5.8, 2.8, "Problem Statement",
+         ["The platform needs to help doctors quickly find",
+          "relevant past cases from a large corpus of",
+          "clinical notes.",
           "",
-          "A query about 'a diabetic patient with kidney",
-          "complications' must surface CKD+diabetes notes",
-          "even when exact words differ."])
+          "A doctor types a natural language query and the",
+          "system should surface the most relevant notes.",
+          "",
+          "The system must understand clinical meaning,",
+          "not just match keywords."])
 
-    # Right panel — requirements
-    card(sl, 6.4, 1.3, 6.6, 2.8, "System Requirements",
-         ["  Semantic retrieval (not keyword matching)",
-          "  Embedding model with clinical justification",
-          "  LLM layer for concise result summaries",
-          "  Evaluation showing clinically relevant results",
-          "  REST API: query in → results + summary out",
-          "  (Optional) Fine-tune embedding model"])
+    # Right panel — verbatim Instructions (deliverables)
+    card(sl, 6.4, 1.3, 6.6, 2.8, "Instructions (Deliverables)",
+         ["Build a retrieval system (NL query → ranked notes)",
+          "Use an embedding model — justify your selection",
+          "Add an LLM layer for a concise summary",
+          "Evaluate — clinically relevant, not keyword matches",
+          "REST API: accept query, return results + summary",
+          "(Optional) Fine-tune embedding model"])
 
-    # Bottom insight box  — capped at y=6.9 to avoid overlapping slide number
+    # Bottom: example + key insight
     add_rect(sl, 0.3, 4.4, 12.7, 2.5, NAVY)
     txb = add_textbox(sl, 0.5, 4.5, 12.3, 2.3)
     txf = clear_first_para(txb)
-    para(txf, "Key Insight", 14, bold=True, colour=TEAL)
+    para(txf, "Key Example", 14, bold=True, colour=TEAL)
     para(txf, (
-        "Keyword search fails when clinical language varies: 'renal insufficiency' vs 'kidney failure', "
-        "'T2DM' vs 'type 2 diabetes'. Dense embedding models project these into the same semantic space, "
-        "enabling retrieval that mirrors how clinicians actually think."),
+        "\"A diabetic patient with kidney complications\" → should retrieve notes about CKD with diabetes "
+        "even if the exact words differ. "
+        "Keyword search fails here; dense embeddings align clinical synonyms in the same semantic space."),
         13, colour=WHITE, space_before=4)
     add_slide_number(sl, num, total)
 
