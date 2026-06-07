@@ -200,9 +200,9 @@ def slide_problem(prs, num, total):
           "  REST API: query in → results + summary out",
           "  (Optional) Fine-tune embedding model"])
 
-    # Bottom insight box
-    add_rect(sl, 0.3, 4.4, 12.7, 2.7, NAVY)
-    txb = add_textbox(sl, 0.5, 4.5, 12.3, 2.5)
+    # Bottom insight box  — capped at y=6.9 to avoid overlapping slide number
+    add_rect(sl, 0.3, 4.4, 12.7, 2.5, NAVY)
+    txb = add_textbox(sl, 0.5, 4.5, 12.3, 2.3)
     txf = clear_first_para(txb)
     para(txf, "Key Insight", 14, bold=True, colour=TEAL)
     para(txf, (
@@ -249,9 +249,9 @@ def slide_architecture(prs, num, total):
          "when HuggingFace Hub is unreachable.  Same FAISS index, same API — zero code changes needed.",
          12, colour=NAVY)
 
-    # Persistence note
-    add_rect(sl, 0.3, 5.9, 12.7, 1.3, NAVY)
-    txb2 = add_textbox(sl, 0.5, 5.97, 12.3, 1.15)
+    # Persistence note  — capped at y=6.9
+    add_rect(sl, 0.3, 5.85, 12.7, 1.05, NAVY)
+    txb2 = add_textbox(sl, 0.5, 5.92, 12.3, 0.88)
     txf2 = clear_first_para(txb2)
     para(txf2, "Persistence:  FAISS index + metadata serialised to disk after ingestion.  "
          "API reloads in < 1s on restart — no re-embedding at startup.", 12, colour=WHITE)
@@ -303,9 +303,9 @@ def slide_embedding(prs, num, total):
         for pt in points:
             para(txf3, f"• {pt}", 11, colour=NAVY, space_before=2)
 
-    # Why not larger models
-    add_rect(sl, 0.3, 5.1, 12.7, 2.05, NAVY)
-    txb = add_textbox(sl, 0.5, 5.18, 12.3, 1.9)
+    # Why not larger models  — capped at y=6.9
+    add_rect(sl, 0.3, 5.0, 12.7, 1.9, NAVY)
+    txb = add_textbox(sl, 0.5, 5.08, 12.3, 1.75)
     txf = clear_first_para(txb)
     para(txf, "Why not GPT-text-embedding or BERT-large?", 14, bold=True, colour=TEAL)
     para(txf, (
@@ -321,8 +321,8 @@ def slide_retrieval(prs, num, total):
     add_rect(sl, 0, 0, 13.33, 7.5, LIGHT)
     header_bar(sl, "Retrieval Pipeline", "Dense embedding + FAISS vector search")
 
-    # Left: how it works
-    card(sl, 0.3, 1.3, 5.8, 5.85, "How Retrieval Works",
+    # Left: how it works  — height capped at y=6.9
+    card(sl, 0.3, 1.3, 5.8, 5.6, "How Retrieval Works",
          ["Step 1 — Ingestion",
           "  Each clinical note → specialty + description",
           "  + first 2 000 chars of transcription",
@@ -350,7 +350,7 @@ def slide_retrieval(prs, num, total):
           "Score > 0.8 → highly relevant",
           "Score < 0.2 → likely off-topic"])
 
-    card(sl, 6.4, 4.2, 6.6, 2.95, "FAISS — Why Not ChromaDB / Pinecone?",
+    card(sl, 6.4, 4.2, 6.6, 2.7, "FAISS — Why Not ChromaDB / Pinecone?",
          ["FAISS: zero network dependency, fully local",
           "IndexFlatIP: exact search, no approximation error",
           "Serialises to single file — simple ops workflow",
@@ -380,22 +380,22 @@ def slide_llm(prs, num, total):
     ]:
         para(txf, line, 11, colour=_rgb(0xCC, 0xDD, 0xFF), space_before=2)
 
-    # Three cards: input, model, output
-    card(sl, 0.3,  3.85, 3.9, 3.3, "Input to LLM",
+    # Three cards: input, model, output  — height capped at y=6.9
+    card(sl, 0.3,  3.85, 3.9, 3.0, "Input to LLM",
          ["Doctor's natural language query",
           "Top-k retrieved notes (ranked)",
           "Each note: specialty, description,",
           "  keywords + first 1 500 chars",
           "Rank and cosine score included"])
 
-    card(sl, 4.45, 3.85, 4.3, 3.3, "Claude Model",
+    card(sl, 4.45, 3.85, 4.3, 3.0, "Claude Model",
          ["Model: claude-sonnet-4-6",
           "Max tokens: 1 024 (configurable)",
           "Temperature: default (balanced)",
           "Fallback: rule-based summary",
           "  if ANTHROPIC_API_KEY not set"])
 
-    card(sl, 9.0,  3.85, 4.0, 3.3, "Output",
+    card(sl, 9.0,  3.85, 4.0, 3.0, "Output",
          ["≤ 300-word clinical summary",
           "Addressed directly to the doctor",
           "Clinically precise vocabulary",
@@ -433,15 +433,15 @@ def slide_api(prs, num, total):
         txf2 = clear_first_para(txb2)
         para(txf2, desc, 12, colour=NAVY)
 
-    # Request / response side by side
-    card(sl, 0.3, 3.25, 5.9, 3.9, "Request Body (POST /retrieve)",
+    # Request / response side by side  — height capped at y=6.9
+    card(sl, 0.3, 3.25, 5.9, 3.6, "Request Body (POST /retrieve)",
          ['{\n  "query": "diabetic patient with',
           '           kidney complications",',
           '  "top_k": 5,',
           '  "include_summary": true',
           '}'])
 
-    card(sl, 6.5, 3.25, 6.5, 3.9, "Response (excerpt)",
+    card(sl, 6.5, 3.25, 6.5, 3.6, "Response (excerpt)",
          ['{ "query": "...",',
           '  "total_retrieved": 5,',
           '  "embedding_model": "all-MiniLM-L6-v2",',
@@ -537,7 +537,7 @@ def slide_semantic_proof(prs, num, total):
     ]
 
     for i, (ql, qv, dl, dv, specialty, score) in enumerate(experiments):
-        top_r = 2.0 + i * 1.65
+        top_r = 2.0 + i * 1.55   # tighter step so bottom note stays within slide
         add_rect(sl, 0.3, top_r, 12.7, 1.5, WHITE)
         # Query side
         txbq = add_textbox(sl, 0.5, top_r + 0.07, 5.8, 0.35)
@@ -564,14 +564,14 @@ def slide_semantic_proof(prs, num, total):
         para(txfs, specialty.split("/")[0].strip(), 9, bold=True, colour=WHITE)
         para(txfs, f"score {score}", 9, colour=WHITE)
 
-    # Note on full corpus
-    add_rect(sl, 0.3, 6.95, 12.7, 0.38, NAVY)
-    txbn = add_textbox(sl, 0.5, 7.0, 12.3, 0.3)
+    # Note on full corpus  — moved up to avoid overlapping slide number
+    add_rect(sl, 0.3, 6.62, 12.7, 0.28, NAVY)
+    txbn = add_textbox(sl, 0.5, 6.64, 12.3, 0.24)
     txfn = clear_first_para(txbn)
     para(txfn, (
         "On the full 5 000-note corpus, Precision@5 improves further — "
         "more relevant notes per specialty means more true positives in every top-5 result."),
-        11, colour=_rgb(0xAA, 0xCC, 0xDD))
+        10, colour=_rgb(0xAA, 0xCC, 0xDD))
     add_slide_number(sl, num, total)
 
 
@@ -632,14 +632,13 @@ def slide_finetuning(prs, num, total):
             col = GREEN if (bold and j in (1, 2)) else NAVY
             para(txf, text, 11, colour=col, bold=bold)
 
-    add_rect(sl, 0.3, 6.72, 12.7, 0.55, _rgb(0xFF, 0xF3, 0xE0))
-    txbn = add_textbox(sl, 0.5, 6.78, 12.3, 0.42)
+    add_rect(sl, 0.3, 6.62, 12.7, 0.28, _rgb(0xFF, 0xF3, 0xE0))
+    txbn = add_textbox(sl, 0.5, 6.64, 12.3, 0.22)
     txfn = clear_first_para(txbn)
     para(txfn, (
         "Note: Figures above are estimates based on published benchmarks for similar corpora.  "
-        "Actual improvement depends on triplet quality and corpus size.  "
-        "Fine-tuning code scaffolding available in scripts/finetune.py (not included in this build)."),
-        10, colour=ORANGE)
+        "Actual improvement depends on triplet quality and corpus size."),
+        9, colour=ORANGE)
     add_slide_number(sl, num, total)
 
 
