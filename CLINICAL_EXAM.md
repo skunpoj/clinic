@@ -8,20 +8,55 @@
 
 ## Original Task
 
-> **Build a retrieval system that takes a natural language query and returns the most relevant clinical notes from a corpus.**
->
-> The system must understand **clinical meaning** — a query about *"a diabetic patient with kidney complications"* should retrieve notes about CKD with diabetes even if the exact words differ.
+*Problem 1 — Clinical Note Retrieval System*  
+*© Invitrace Co., Ltd. — For internal recruitment use only. Do not distribute.*
 
-### Exam Requirements
+---
+
+### Problem Statement
+
+- The platform needs to help doctors quickly find relevant past cases from a large corpus of clinical notes.
+- A doctor types a natural language query describing a patient situation, and the system should surface the most relevant clinical notes from the database.
+- The system must understand clinical meaning, not just match keywords — a query about "a diabetic patient with kidney complications" should retrieve notes about CKD with diabetes even if the exact words differ.
+
+### Instruction
+
+- Download the dataset from the link in the Data Description section below.
+- Build a retrieval system that takes a natural language query and returns the most relevant clinical notes from the corpus.
+- Use an embedding model of your choice. Justify your selection.
+- Add an LLM layer that generates a concise summary of the retrieved results for the doctor.
+- Evaluate your system — demonstrate that the retrieval is returning clinically relevant results, not just surface-level keyword matches.
+- **(Optional)** Fine-tune your embedding model on the provided corpus and show whether it improves retrieval quality compared to the base model. This is not required but will be recognised as a strength.
+- Prepare one presentation to summarise what you have done (maximum 10 pages).
+- Expose your system as a REST API service — the API should accept a natural language query and return the retrieved results and generated summary.
+- Prepare to present for a 30-minute session.
+
+### Data Description
+
+- Dataset link: <https://www.kaggle.com/datasets/tboyle10/medicaltranscriptions>
+
+### Target Audience
+
+- AI Engineering Manager
+- Product Manager
+
+### Additional Guidance
+
+Anything outside this instruction, please feel free to make your own assumption as needed.
+
+---
+
+### Delivery Checklist
 
 | # | Requirement | Status |
 |---|---|---|
-| 1 | **Semantic retrieval** — not keyword matching; must handle vocabulary variation and clinical synonyms | ✓ Delivered |
-| 2 | **Embedding model selection** with written justification for the choice | ✓ Delivered |
-| 3 | **LLM layer** to produce a concise clinical summary of the retrieved results | ✓ Delivered |
-| 4 | **Evaluation** demonstrating the system returns clinically relevant results | ✓ Delivered |
-| 5 | **REST API** — submit a query, receive ranked notes and an LLM-generated summary | ✓ Delivered |
-| 6 | **(Optional) Fine-tune** the embedding model on the clinical corpus | Documented |
+| 1 | Retrieval system — natural language query → ranked clinical notes | ✓ Delivered |
+| 2 | Embedding model with written justification | ✓ Delivered |
+| 3 | LLM layer — concise summary of retrieved results | ✓ Delivered |
+| 4 | Evaluation — clinically relevant results, not keyword matches | ✓ Delivered |
+| 5 | REST API — accepts query, returns results + summary | ✓ Delivered |
+| 6 | Presentation — max 10 pages | ✓ Delivered (10 slides) |
+| 7 | (Optional) Fine-tune embedding model + compare with base | Documented |
 
 ---
 
