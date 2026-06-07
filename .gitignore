@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dataset and index files (large binaries)
+data/mtsamples.csv
+data/faiss_index
+data/metadata.pkl
