@@ -183,37 +183,48 @@ def slide_01_title(prs, num, total):
 
 
 def slide_02_problem(prs, num, total):
-    """Slide 2 — Problem & Motivation."""
+    """Slide 2 — Problem Statement (verbatim from exam)."""
     sl = blank_slide(prs)
     add_rect(sl, 0, 0, 13.33, 7.5, LIGHT)
-    header_bar(sl, "Problem & Motivation", "Why semantic retrieval matters in clinical settings")
+    header_bar(sl, "Problem Statement", "Problem 1 — Clinical Note Retrieval System")
 
-    # Left card — The Clinical Challenge
-    card(sl, 0.3, 1.3, 6.1, 5.85, "The Clinical Challenge",
-         ["Doctors spend ~30% of time searching past cases",
+    # Left card — verbatim Problem Statement bullets
+    card(sl, 0.3, 1.3, 6.1, 3.5, "Problem Statement",
+         ["The platform needs to help doctors quickly find",
+          "relevant past cases from a large corpus of",
+          "clinical notes.",
           "",
-          "Keyword search fails with clinical synonym variation",
-          "  \"CKD\" ≠ \"renal failure\" to a search engine",
+          "A doctor types a natural language query describing",
+          "a patient situation, and the system should surface",
+          "the most relevant clinical notes from the database.",
           "",
-          "Large corpus (5 000+ notes) makes manual",
-          "  review impossible within a consultation",
-          "",
-          "Critical information buried in unstructured text:",
-          "  transcriptions, discharge notes, consult letters"])
+          "The system must understand clinical meaning, not",
+          "just match keywords — a query about 'a diabetic",
+          "patient with kidney complications' should retrieve",
+          "notes about CKD with diabetes even if the exact",
+          "words differ."])
 
-    # Right card — Our Goal
-    card(sl, 6.7, 1.3, 6.3, 5.85, "Our Goal",
-         ["Semantic retrieval: meaning over keywords",
-          "",
-          "Surface relevant notes even with different",
-          "  vocabulary or abbreviation style",
-          "",
-          "LLM summary so doctors get an answer,",
-          "  not just a ranked list of documents",
-          "",
-          "REST API exposing the system as a service",
-          "  so any EHR or front-end can consume it"])
+    # Right card — verbatim Instructions
+    card(sl, 6.7, 1.3, 6.3, 3.5, "Instructions",
+         ["Build a retrieval system:",
+          "  natural language query → ranked clinical notes",
+          "Use an embedding model — justify your selection",
+          "Add an LLM layer for a concise summary",
+          "Evaluate: clinically relevant, not keyword matches",
+          "(Optional) Fine-tune the embedding model",
+          "Prepare a presentation — max 10 pages",
+          "Expose as a REST API service",
+          "Prepare to present — 30-minute session"])
 
+    # Bottom: target audience + guidance
+    add_rect(sl, 0.3, 5.05, 12.7, 1.85, NAVY)
+    txb = add_textbox(sl, 0.5, 5.13, 12.3, 1.65)
+    txf = clear_first_para(txb)
+    para(txf, "Target Audience  ·  Additional Guidance", 13, bold=True, colour=TEAL)
+    para(txf, "AI Engineering Manager  ·  Product Manager", 12, colour=_rgb(0xCC, 0xDD, 0xFF), space_before=4)
+    para(txf,
+         "Anything outside this instruction, please feel free to make your own assumption as needed.",
+         12, colour=WHITE, space_before=4)
     add_slide_number(sl, num, total)
 
 
@@ -307,13 +318,13 @@ def slide_04_architecture(prs, num, total):
             txf = clear_first_para(ar)
             para(txf, "→", 18, bold=True, colour=TEAL)
 
-    # Two-column detail section
+    # Two-column detail section  — heights capped at y=6.9
     # Left: Components
-    add_rect(sl, 0.3, 4.05, 6.2, 3.1, NAVY)
+    add_rect(sl, 0.3, 4.05, 6.2, 2.85, NAVY)
     txb_cl = add_textbox(sl, 0.5, 4.12, 5.8, 0.42)
     txf_cl = clear_first_para(txb_cl)
     para(txf_cl, "Components", 14, bold=True, colour=TEAL)
-    txb_cl2 = add_textbox(sl, 0.5, 4.58, 5.8, 2.4)
+    txb_cl2 = add_textbox(sl, 0.5, 4.58, 5.8, 2.2)
     txf_cl2 = clear_first_para(txb_cl2)
     for comp in [
         "FastAPI          — REST service framework",
@@ -326,11 +337,11 @@ def slide_04_architecture(prs, num, total):
         para(txf_cl2, comp, 11, colour=WHITE, space_before=3)
 
     # Right: Data flow
-    add_rect(sl, 6.8, 4.05, 6.2, 3.1, _rgb(0x0D, 0x38, 0x6A))
+    add_rect(sl, 6.8, 4.05, 6.2, 2.85, _rgb(0x0D, 0x38, 0x6A))
     txb_df = add_textbox(sl, 7.0, 4.12, 5.8, 0.42)
     txf_df = clear_first_para(txb_df)
     para(txf_df, "Data Flow", 14, bold=True, colour=TEAL)
-    txb_df2 = add_textbox(sl, 7.0, 4.58, 5.8, 2.4)
+    txb_df2 = add_textbox(sl, 7.0, 4.58, 5.8, 2.2)
     txf_df2 = clear_first_para(txb_df2)
     for step in [
         "query string",
@@ -425,7 +436,7 @@ def slide_05_embedding(prs, num, total):
           "Good baseline comparison"]),
     ]):
         lft = 0.3 + i * 4.35
-        card(sl, lft, 5.2, 4.1, 2.0, f"{badge}: {label}", items)
+        card(sl, lft, 5.1, 4.1, 1.8, f"{badge}: {label}", items)   # capped at y=6.9
 
     add_slide_number(sl, num, total)
 
@@ -436,8 +447,8 @@ def slide_06_retrieval(prs, num, total):
     add_rect(sl, 0, 0, 13.33, 7.5, LIGHT)
     header_bar(sl, "Retrieval Pipeline", "FAISS IndexFlatIP — exact cosine similarity search")
 
-    # Left panel — pipeline diagram (text-based)
-    add_rect(sl, 0.3, 1.25, 6.0, 5.9, NAVY)
+    # Left panel — pipeline diagram  — height capped at y=6.9
+    add_rect(sl, 0.3, 1.25, 6.0, 5.65, NAVY)
     txb_title = add_textbox(sl, 0.5, 1.33, 5.6, 0.42)
     txf_title = clear_first_para(txb_title)
     para(txf_title, "Query Processing Flow", 14, bold=True, colour=TEAL)
@@ -457,12 +468,12 @@ def slide_06_retrieval(prs, num, total):
         ("▶  Ranked results returned to LLM layer", TEAL),
     ]
 
-    txb_steps = add_textbox(sl, 0.5, 1.85, 5.6, 5.1)
+    txb_steps = add_textbox(sl, 0.5, 1.85, 5.6, 4.9)
     txf_steps = clear_first_para(txb_steps)
     for text, col in steps:
         para(txf_steps, text, 11, colour=col, space_before=3)
 
-    # Right panel — Why these choices
+    # Right panel — Why these choices  — heights capped at y=6.9
     card(sl, 6.6, 1.25, 6.4, 2.75, "Why FAISS IndexFlatIP?",
          ["L2-normalised vectors → inner product = cosine similarity",
           "Exact search: no approximation error for 5k corpus",
@@ -470,7 +481,7 @@ def slide_06_retrieval(prs, num, total):
           "Serialised to disk → sub-1s API startup on reload",
           "Single-file ops — no managed service required"])
 
-    card(sl, 6.6, 4.2, 6.4, 2.95, "Cosine Similarity Interpretation",
+    card(sl, 6.6, 4.2, 6.4, 2.7, "Cosine Similarity Interpretation",
          ["Score range 0.0 – 1.0 (after L2 normalisation)",
           "Score > 0.85 → highly clinically relevant",
           "Score 0.60–0.85 → probable match, review needed",
@@ -501,15 +512,15 @@ def slide_07_llm(prs, num, total):
     ]:
         para(txf_prompt, line, 11, colour=_rgb(0xCC, 0xDD, 0xFF), space_before=2)
 
-    # Three cards: Input, Model, Output
-    card(sl, 0.3, 3.95, 3.9, 3.2, "Input to LLM",
+    # Three cards: Input, Model, Output  — height capped at y=6.9
+    card(sl, 0.3, 3.95, 3.9, 2.95, "Input to LLM",
          ["Doctor's natural language query",
           "Top-k retrieved notes (ranked)",
           "Each note includes:",
           "  rank, cosine score, specialty,",
           "  description, first 1 500 chars"])
 
-    card(sl, 4.5, 3.95, 4.3, 3.2, "Model & Config",
+    card(sl, 4.5, 3.95, 4.3, 2.95, "Model & Config",
          ["Model: claude-sonnet-4-6",
           "Max tokens: 1 024 (configurable)",
           "Temperature: default (balanced)",
@@ -517,7 +528,7 @@ def slide_07_llm(prs, num, total):
           "Fallback: structured rule-based",
           "  summary if no API key set"])
 
-    card(sl, 9.1, 3.95, 3.9, 3.2, "Output",
+    card(sl, 9.1, 3.95, 3.9, 2.95, "Output",
          ["≤300-word clinical summary",
           "Addressed to the doctor",
           "Clinically precise vocabulary",
@@ -583,13 +594,13 @@ def slide_08_api(prs, num, total):
     ]:
         para(txf_res, line, 11, colour=_rgb(0xCC, 0xDD, 0xFF), space_before=2)
 
-    # Bottom badge row
-    add_rect(sl, 0.3, 6.7, 12.7, 0.5, TEAL)
-    txb_tags = add_textbox(sl, 0.5, 6.77, 12.3, 0.38)
+    # Bottom badge row  — moved up from 6.7 to avoid overlapping slide number
+    add_rect(sl, 0.3, 6.58, 12.7, 0.32, TEAL)
+    txb_tags = add_textbox(sl, 0.5, 6.61, 12.3, 0.26)
     txf_tags = clear_first_para(txb_tags)
     para(txf_tags,
          "Docker-ready  ·  CORS enabled  ·  Pydantic validation  ·  422 on bad input",
-         13, bold=True, colour=WHITE, align=PP_ALIGN.CENTER)
+         12, bold=True, colour=WHITE, align=PP_ALIGN.CENTER)
 
     add_slide_number(sl, num, total)
 
@@ -648,17 +659,17 @@ def slide_09_evaluation(prs, num, total):
             colour = GREEN if j == 3 else NAVY
             para(txf, text, 10, colour=colour, bold=(j == 3))
 
-    # Semantic proof banner
-    add_rect(sl, 0.3, 5.95, 12.7, 1.25, NAVY)
-    txb_proof = add_textbox(sl, 0.5, 6.02, 12.3, 1.1)
+    # Semantic proof banner  — height reduced to stay within y=6.9
+    add_rect(sl, 0.3, 5.93, 12.7, 0.97, NAVY)
+    txb_proof = add_textbox(sl, 0.5, 5.98, 12.3, 0.84)
     txf_proof = clear_first_para(txb_proof)
-    para(txf_proof, "Semantic Proof — Vocabulary Mismatch Handled Correctly:", 13, bold=True, colour=TEAL)
+    para(txf_proof, "Semantic Proof — Vocabulary Mismatch Handled Correctly:", 12, bold=True, colour=TEAL)
     para(txf_proof,
          "Query: \"renal insufficiency in T2DM\"  →  Rank 1: Nephrology / CKD  score=0.985",
-         12, colour=WHITE, space_before=3)
+         11, colour=WHITE, space_before=2)
     para(txf_proof,
          "No word overlap between query and document — meaning preserved across vocabulary boundary.",
-         11, colour=_rgb(0xCC, 0xDD, 0xFF), space_before=2)
+         10, colour=_rgb(0xCC, 0xDD, 0xFF), space_before=2)
 
     add_slide_number(sl, num, total)
 
@@ -674,12 +685,12 @@ def slide_10_summary(prs, num, total):
     txf_title = clear_first_para(txb_title)
     para(txf_title, "Summary & Future Work", 28, bold=True, colour=WHITE)
 
-    # Left dark panel — Delivered
-    add_rect(sl, 0.5, 1.1, 5.9, 5.85, _rgb(0x0D, 0x38, 0x6A))
+    # Left dark panel — Delivered  — height capped at y=6.9
+    add_rect(sl, 0.5, 1.1, 5.9, 5.7, _rgb(0x0D, 0x38, 0x6A))
     txb_dh = add_textbox(sl, 0.7, 1.2, 5.5, 0.48)
     txf_dh = clear_first_para(txb_dh)
     para(txf_dh, "Delivered", 17, bold=True, colour=TEAL)
-    txb_dl = add_textbox(sl, 0.7, 1.75, 5.5, 5.0)
+    txb_dl = add_textbox(sl, 0.7, 1.75, 5.5, 4.8)
     txf_dl = clear_first_para(txb_dl)
     for line in [
         "✓  Semantic retrieval (not keyword matching)",
@@ -692,12 +703,12 @@ def slide_10_summary(prs, num, total):
     ]:
         para(txf_dl, line, 13, colour=WHITE, space_before=4)
 
-    # Right dark panel — Next Steps
-    add_rect(sl, 6.9, 1.1, 6.1, 5.85, _rgb(0x0D, 0x38, 0x6A))
+    # Right dark panel — Next Steps  — height capped at y=6.9
+    add_rect(sl, 6.9, 1.1, 6.1, 5.7, _rgb(0x0D, 0x38, 0x6A))
     txb_nh = add_textbox(sl, 7.1, 1.2, 5.7, 0.48)
     txf_nh = clear_first_para(txb_nh)
     para(txf_nh, "Next Steps", 17, bold=True, colour=TEAL)
-    txb_nl = add_textbox(sl, 7.1, 1.75, 5.7, 5.0)
+    txb_nl = add_textbox(sl, 7.1, 1.75, 5.7, 4.8)
     txf_nl = clear_first_para(txb_nl)
     for line in [
         "▶  Fine-tune on corpus triplets",
@@ -710,8 +721,8 @@ def slide_10_summary(prs, num, total):
     ]:
         para(txf_nl, line, 13, colour=WHITE, space_before=4)
 
-    # Footer
-    txb_foot = add_textbox(sl, 0.5, 7.1, 12.5, 0.3)
+    # Footer  — positioned just above slide number area
+    txb_foot = add_textbox(sl, 0.5, 6.88, 11.8, 0.2)
     txf_foot = clear_first_para(txb_foot)
     para(txf_foot,
          "Clinical AI Take-Home Exam  ·  June 2026",
