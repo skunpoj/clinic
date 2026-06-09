@@ -65,7 +65,13 @@ def tf(shape):
 
 def para(txf, text: str, size: int, bold=False, colour=WHITE,
          align=PP_ALIGN.LEFT, space_before=0, italic=False):
-    p = txf.add_paragraph()
+    # Reuse the empty first paragraph (from clear_first_para) to avoid invisible
+    # blank paragraph that pushes text outside its bounding box.
+    paras = txf.paragraphs
+    if len(paras) == 1 and not paras[0].runs:
+        p = paras[0]
+    else:
+        p = txf.add_paragraph()
     p.alignment = align
     if space_before:
         p.space_before = Pt(space_before)
@@ -985,7 +991,7 @@ def slide_10_summary(prs, num, total):
         para(txf_nl, line, 10, colour=WHITE, space_before=4)
 
     # Footer
-    txb_foot = add_textbox(sl, 0.45, 6.77, 12.5, 0.22)
+    txb_foot = add_textbox(sl, 0.45, 6.68, 12.5, 0.20)
     txf_foot = clear_first_para(txb_foot)
     para(txf_foot,
          "Clinical AI Take-Home Exam  ·  Invitrace Co., Ltd.  ·  June 2026",
