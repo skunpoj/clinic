@@ -38,7 +38,14 @@ def cfp(b):
     tf = b.text_frame; tf.paragraphs[0].clear(); return tf
 
 def p(tf, text, size, bold=False, col=WHITE, align=PP_ALIGN.LEFT, sb=0, italic=False):
-    pg = tf.add_paragraph(); pg.alignment = align
+    # Reuse the empty first paragraph (from cfp) instead of adding a new one.
+    # This prevents an invisible blank paragraph from pushing text out of the box.
+    paras = tf.paragraphs
+    if len(paras) == 1 and not paras[0].runs:
+        pg = paras[0]
+    else:
+        pg = tf.add_paragraph()
+    pg.alignment = align
     if sb: pg.space_before = Pt(sb)
     r = pg.add_run(); r.text = text; r.font.size = Pt(size)
     r.font.bold = bold; r.font.italic = italic; r.font.color.rgb = col
@@ -533,9 +540,8 @@ def s13_synonym_alignment(prs, n):
     hdr(sl,"Embedding: Clinical Synonym Alignment Proof","Queries using different vocabulary still retrieve clinically correct documents")
     dark_section(sl,0.3,1.18,12.7,0.88,
         "Why Synonym Alignment Matters",
-        ["A doctor asks about 'renal insufficiency in T2DM'. The notes use 'CKD', 'chronic kidney disease', 'nephropathy', 'GFR'. "
-         "A keyword matcher returns nothing. The embedding model must have learnt that these phrases refer to the same clinical concept.",
-         "Measured by cosine similarity between the embedded query phrase and the embedded target phrase — no common tokens."])
+        ["Keyword search fails: query 'renal insufficiency' shares zero tokens with notes containing 'CKD', 'nephropathy', 'GFR'.",
+         "Embedding bridges clinical synonymy by cosine similarity — no token overlap required."])
     rect(sl,0.3,2.22,12.7,0.32,NAVY)
     bh=txb(sl,0.5,2.26,12.3,0.25); tf=cfp(bh)
     p(tf,"Query Term (paraphrased)                 Target Term (in notes)                Score   Clinical Domain",11,bold=True)
@@ -627,9 +633,7 @@ def s15_faiss_deep(prs, n):
     hdr(sl,"FAISS Deep Dive: Index Architecture","Why IndexFlatIP is the right choice — and the upgrade path")
     dark_section(sl,0.3,1.18,12.7,0.82,
         "What FAISS Does",
-        ["Facebook AI Similarity Search: library for dense vector nearest-neighbour search. Supports exact and approximate methods.",
-         "Core operation: given query vector q and index of N vectors, return the k vectors with highest similarity score. "
-         "IndexFlatIP = exact inner product (= cosine for L2-normalised vecs). No approximation. Zero false negatives."])
+        ["FAISS: dense vector nearest-neighbour search library. IndexFlatIP = exact inner product (cosine for L2-normalised vecs). No approximation. Zero false negatives."])
     rect(sl,0.3,2.16,12.7,0.30,NAVY)
     bh=txb(sl,0.5,2.20,12.3,0.23); tf=cfp(bh)
     p(tf,"Index Type         Accuracy   Query Time   Memory Overhead   Max Scale   Used Here",11,bold=True)
@@ -924,9 +928,7 @@ def s22_eval_results(prs, n):
     hdr(sl,"Evaluation: 5 Semantic Proof Queries","All 5 queries designed with zero vocabulary overlap with target documents")
     dark_section(sl,0.3,1.18,12.7,0.72,
         "Test Design Principle",
-        ["Each query is deliberately paraphrased so it shares NO tokens with the target document. "
-         "A BM25 or TF-IDF keyword matcher returns empty results for every query. "
-         "The embedding system returns the clinically correct specialty as rank 1 for all 5. Precision@1 = 1.0."])
+        ["All 5 queries share zero tokens with target documents — keyword search returns nothing. Embedding Precision@1 = 1.0."])
     rect(sl,0.3,2.06,12.7,0.32,NAVY)
     bh=txb(sl,0.5,2.10,12.3,0.25); tf=cfp(bh)
     p(tf,"Query (paraphrased — zero token overlap)          Target Specialty   Score  Recall  Precision  Correct",11,bold=True)
@@ -948,8 +950,8 @@ def s22_eval_results(prs, n):
         for text,wid,lx,fc in [(q,5.6,0.42,NAVY),(spec,2.8,6.18,TEAL),(score,0.7,9.15,GREEN),(recall,0.55,9.95,GREEN),(prec,0.55,10.6,GREEN),(correct,0.55,11.25,GREEN)]:
             bb=txb(sl,lx,tr+0.08,wid,0.34); tff=cfp(bb); p(tff,text,9,col=fc,bold=(fc in [GREEN,TEAL]))
     dark2(sl,0.3,4.82,12.7,1.06,"Why 1.000 for TKR and 0.946 for DKA?",
-          ["TKR (1.000): Post-operative knee rehabilitation is a highly specific clinical domain with few competing documents. The query vocabulary is unambiguous.",
-           "DKA (0.946 — lowest): Genuine semantic ambiguity between endocrine emergency notes and general internal medicine notes containing glucose management. This is clinically reasonable, not a system failure."])
+          ["TKR 1.000: narrow domain with unambiguous vocabulary — minimal competition from other specialties.",
+           "DKA 0.946 (lowest): expected ambiguity between endocrine and general medicine notes — clinically reasonable."])
     card(sl,0.3,6.04,6.1,0.84,"Running Evaluation",
          ["python scripts/evaluate.py --sample","python scripts/evaluate.py --csv data/mtsamples.csv","python scripts/evaluate.py --compare-models"],bsz=9)
     card(sl,6.65,6.04,6.35,0.84,"What Gets Measured",
@@ -961,8 +963,7 @@ def s23_semantic_vs_keyword(prs, n):
     hdr(sl,"Evaluation: Semantic vs Keyword Search","Side-by-side comparison proving embedding retrieval beats BM25/TF-IDF")
     dark_section(sl,0.3,1.18,12.7,0.70,
         "The Core Claim",
-        ['Query: "renal insufficiency in type 2 diabetes mellitus". Target document uses: "CKD", "chronic kidney disease", "nephropathy", "GFR", "creatinine". '
-         'ZERO shared tokens. Keyword search returns nothing. Embedding returns rank-1 Nephrology with score=0.985.'])
+        ['Zero token overlap: query uses "renal insufficiency", notes use "CKD/nephropathy/GFR". Embedding returns Nephrology rank-1 at score 0.985.'])
     rect(sl,0.3,2.04,6.1,0.30,NAVY); rect(sl,6.65,2.04,6.35,0.30,NAVY)
     bh=txb(sl,0.5,2.08,5.7,0.23); tf=cfp(bh); p(tf,"BM25 / TF-IDF Keyword Search",11,bold=True)
     bh2=txb(sl,6.85,2.08,5.95,0.23); tf2=cfp(bh2); p(tf2,"Dense Embedding Retrieval (this system)",11,bold=True)
@@ -985,9 +986,7 @@ def s24_finetune_approach(prs, n):
     hdr(sl,"Fine-Tuning: Approach & Implementation","Optional — documented as required by exam; +5–15% precision expected")
     dark_section(sl,0.3,1.18,12.7,0.70,
         "Why Fine-Tune?",
-        ["Base all-MiniLM-L6-v2 is general-purpose. Fine-tuning on mtsamples corpus vocabulary makes it domain-specific. "
-         "Expected gain: +5–15% Precision@k on clinical paraphrase queries, especially biomedical abbreviation disambiguation "
-         "(CKD/renal failure, DKA/ketoacidosis). Exam marks this as recognised strength."])
+        ["Domain fine-tuning boosts Precision@k by +5–15%; especially improves biomedical abbreviation disambiguation (CKD, DKA)."])
     card(sl,0.3,2.04,6.1,2.28,"Triplet Generation",
          ["Source: specialty labels as free supervision signal",
           "",
@@ -1048,9 +1047,9 @@ def s25_finetune_results(prs, n):
         for text,wid,lx,fc in [(name,2.95,0.42,bc),(p5,0.8,3.55,NAVY),(p1,0.8,4.52,NAVY),(ms,0.8,5.5,NAVY),(cost,1.4,6.5,NAVY),(avail,1.5,8.1,bc)]:
             bb=txb(sl,lx,tr+0.08,wid,0.32); tff=cfp(bb); p(tff,text,9,col=fc,bold=("fine-tuned" in name or text==bc))
     dark2(sl,0.3,3.38,12.7,1.14,"Why These Numbers Are Estimates",
-          ["Figures derived from published domain-adaptive fine-tuning benchmarks on MIMIC-III and PubMed corpora of similar scale (~5k–50k docs).",
-           "Actual gain depends on triplet quality, training duration, and specialty distribution. +5–15% is conservative; actual may be higher for rare specialties.",
-           "Fine-tuning code scaffolding is documented here but not submitted as runnable code — consistent with 'Optional' designation in the exam."])
+          ["Figures from published domain-adaptive fine-tuning benchmarks on MIMIC-III and PubMed corpora (~5k–50k docs).",
+           "Actual gain: +5–15% is conservative; varies by triplet quality, training duration, specialty distribution.",
+           "Fine-tuning scaffold documented but not submitted as runnable code — consistent with 'Optional' exam designation."])
     card(sl,0.3,4.68,6.1,2.20,"Where Gains Are Largest",
          ["Biomedical abbreviation disambiguation:",
           "  CKD ↔ chronic kidney disease ↔ renal failure",
@@ -1207,10 +1206,10 @@ def s27_structure(prs, n):
 def s28_assumptions(prs, n):
     sl = blank(prs); rect(sl,0,0,13.33,7.5,LIGHT)
     hdr(sl,"Assumptions Made","Exam stated: 'feel free to make your own assumption as needed'")
-    dark_section(sl,0.3,1.18,12.7,0.60,
+    dark_section(sl,0.3,1.18,12.7,1.10,
         "Design Philosophy",
-        ["Each assumption below is stated explicitly with rationale. Undocumented assumptions are the root cause of most misaligned deliverables. "
-         "Assumptions are made where the exam is silent, not where it specifies."])
+        ["Each assumption is stated explicitly with rationale — undocumented assumptions cause misaligned deliverables.",
+         "Assumptions are made only where the exam is silent, not where it specifies."])
     assumptions=[
         ("Assumption 1","Truncation at 2 000 chars is sufficient for embedding quality",
          ["The embedding model's 512-token limit means only the first ~350–450 words can be encoded.",
@@ -1234,10 +1233,10 @@ def s28_assumptions(prs, n):
           "Triplet generation strategy, loss function, and performance estimates are all detailed."]),
     ]
     for i,(num_,heading,bullets) in enumerate(assumptions):
-        row_=i//2; col_=i%2; lft=0.3+col_*6.55; top_=2.0+row_*2.38
-        rect(sl,lft,top_,6.25,2.32,_rgb(0x0D,0x38,0x6A))
+        row_=i//2; col_=i%2; lft=0.3+col_*6.55; top_=2.40+row_*2.20
+        rect(sl,lft,top_,6.25,2.18,_rgb(0x0D,0x38,0x6A))
         bh=txb(sl,lft+0.15,top_+0.08,6.0,0.26); tf=cfp(bh); p(tf,f"{num_}: {heading}",10,bold=True,col=TEAL)
-        bl=txb(sl,lft+0.15,top_+0.38,6.0,1.86); tf2=cfp(bl)
+        bl=txb(sl,lft+0.15,top_+0.38,6.0,1.72); tf2=cfp(bl)
         for bullet in bullets: p(tf2,f"• {bullet}",9,col=WHITE,sb=2)
     num(sl,n)
 
