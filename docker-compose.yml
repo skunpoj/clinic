@@ -1,0 +1,18 @@
+services:
+  clinic:
+    build:
+      context: .
+      # Required on Proxmox LXC hosts — AppArmor is not available inside nested containers
+      args: []
+    image: clinic:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
+      - TOP_K=${TOP_K:-5}
+    volumes:
+      - ./data:/app/data
+    security_opt:
+      - apparmor=unconfined
+    restart: unless-stopped
